@@ -1,0 +1,93 @@
+/* Tampilan minimal. Query, transaksi, hak akses, dan SQL tetap memakai kode lama. */
+:root {
+  --forest:#155eef;
+  --deep:#162033;
+  --sea:#155eef;
+  --sun:#155eef;
+  --sun-dark:#155eef;
+  --ink:#152134;
+  --muted:#667085;
+  --bg:#f7f9fc;
+  --paper:#fff;
+  --border:#e4e9f1;
+  --shadow:none;
+}
+body {background:#f7f9fc;color:#152134;font-family:'Segoe UI',Arial,sans-serif;font-size:14px}
+.app-shell {background:#f7f9fc;}
+.sidebar {width:226px;min-width:226px;background:#fff;color:#253247;border-right:1px solid #e4e9f1;padding:24px 12px;box-shadow:none;}
+.sidebar .brand {color:#155eef;font-size:23px;font-weight:800;letter-spacing:-.04em;padding:5px 14px 24px;display:block;}
+.main-nav {gap:5px;}
+.sidebar .nav-item,.sidebar .simple-nav-details summary {display:block;min-height:42px;padding:11px 14px;color:#405067;font-size:14px;font-weight:500;border-radius:7px;line-height:20px;box-shadow:none;}
+.sidebar .nav-item.active {background:#eff5ff;color:#155eef;font-weight:700;box-shadow:none;}
+.sidebar .nav-item:hover,.sidebar .simple-nav-details summary:hover {background:#f2f5f9;color:#213b65;}
+.sidebar .simple-nav-details {margin:7px 0 0;padding:5px 0 0;border-top:1px solid #e8ebf0;}
+.sidebar .simple-nav-details summary {cursor:pointer;list-style:none;}
+.sidebar .simple-nav-details summary::-webkit-details-marker {display:none;}
+.sidebar .simple-nav-details summary:after {content:'⌄';float:right;color:#75839a;}
+.sidebar .simple-nav-details[open] summary:after {content:'⌃';}
+.sidebar .simple-nav-sub {padding:4px 0 3px 9px;}
+.sidebar .simple-nav-sub .nav-item {min-height:35px;padding:7px 12px;font-size:13px;}
+.topbar {height:68px;padding:0 30px;border-bottom:1px solid #e4e9f1;background:#fff;}
+.topbar-title {font-size:15px;font-weight:700;color:#1d2939;}
+.session-user {font-size:13px;color:#667085;font-weight:500;}
+.logout-button {font-size:13px;font-weight:600;color:#405167;background:#fff;border:1px solid #dbe3ef;border-radius:7px;padding:9px 13px;}
+.logout-button:hover {background:#f3f6fa;}
+.content {max-width:1280px;padding:30px 30px 70px;}
+.clean-heading {margin-bottom:23px;}
+.clean-heading h1 {font-size:28px;line-height:1.3;font-weight:700;letter-spacing:-.035em;margin:0;}
+.clean-margin {display:flex;align-items:center;justify-content:space-between;gap:15px;background:#fff;border:1px solid #e4e9f1;border-radius:10px;padding:25px 28px;margin-bottom:27px;}
+.clean-margin h2 {font-size:15px;font-weight:600;margin:0 0 8px;color:#5b687c;}
+.clean-margin-value {font-size:34px;font-weight:750;color:#155eef;letter-spacing:-.04em;line-height:1.2;}
+.clean-secondary {display:inline-flex;align-items:center;justify-content:center;padding:10px 15px;min-height:40px;background:white;border:1px solid #d8e0ed;border-radius:7px;color:#2453a5;font-size:13px;font-weight:600;white-space:nowrap;}
+.clean-secondary:hover {background:#f0f5ff;color:#174a9c;}
+.clean-process>h2 {font-size:17px;margin:0 0 14px;font-weight:700;color:#1e2e42;}
+.clean-process-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
+.clean-process-card {min-height:151px;padding:25px 22px;background:#fff;border:1px solid #e4e9f1;border-radius:10px;display:flex;flex-direction:column;justify-content:space-between;gap:25px;min-width:0;}
+.clean-process-card h3 {margin:0;font-size:19px;letter-spacing:-.02em;font-weight:700;color:#1d2939;}
+.clean-card-actions {display:flex;gap:9px;align-items:center;flex-wrap:wrap;}
+.primary-btn,.small-btn {font-family:inherit;display:inline-flex;justify-content:center;align-items:center;background:#155eef;color:#fff;padding:10px 16px;border:1px solid #155eef;border-radius:7px;font-size:13px;line-height:1.35;min-height:40px;font-weight:600;box-shadow:none;gap:6px;cursor:pointer;}
+.primary-btn:hover,.small-btn:hover {background:#004bd4;border-color:#004bd4;color:#fff;}
+.clean-stock-link {display:inline-flex;gap:9px;margin-top:23px;font-size:14px;font-weight:600;color:#155eef;}
+.clean-stock-link:hover {text-decoration:underline;}
+/* Halaman daftar dan transaksi */
+.page-header {padding:4px 0 22px;align-items:center;}
+.page-header h1 {font-family:inherit;font-size:27px;letter-spacing:-.035em;font-weight:700;margin:0;color:#192739;}
+.page-header h1 .accent {display:none;}
+.page-header .eyebrow,.simple-kicker,.nav-caption,.sidebar-tag,.footer,.simple-head p {display:none!important;}
+.page-header p,.panel-heading p,.form-hint {display:none;}
+.breadcrumb-back {font-size:13px;line-height:1.4;margin-bottom:9px;color:#5c6d85;font-weight:500;}
+.breadcrumb-back:hover {color:#155eef;}
+.panel {border-radius:10px;box-shadow:none;border:1px solid #e4e9f1;}
+.panel-heading {padding:19px 22px 14px;}
+.panel-heading h2,.panel h2 {font-family:inherit;font-size:16px;font-weight:700;color:#1b2c40;letter-spacing:0;}
+.panel .data-table th {background:#f8fafc;font-size:12px;color:#58657a;font-weight:700;padding:13px 17px;}
+.panel .data-table td {font-size:13px;color:#27364b;padding:13px 17px;}
+.panel .table-wrap {max-width:100%;}
+.panel-footer {font-size:12px;}
+.list-actions input {font-size:14px;padding:9px 12px;}
+.row-indicator {font-size:12px;}
+.tx-form,.master-form {padding:20px 22px 24px;}
+.tx-form label,.master-form label {font-size:13px;font-weight:600;color:#34465b;}
+.tx-form input,.tx-form select,.tx-form textarea,.master-form input,.master-form select,.master-form textarea,.filter-bar input,.filter-bar select {min-height:41px;font-size:14px;border:1px solid #dbe3ee;border-radius:7px;color:#1e293b;background:#fff;}
+.tx-form input:focus,.tx-form select:focus,.master-form input:focus,.master-form select:focus,.list-actions input:focus {outline:2px solid #b5d0ff;outline-offset:1px;box-shadow:none;}
+.section-spacing {margin-top:18px;}
+.form-actions {margin-top:22px;}
+.form-actions a,.toolbar a {font-size:13px;color:#61718b;font-weight:500;}
+.filter-bar {padding:15px 22px;}
+.filter-bar label {font-size:13px;font-weight:600;}
+.badge,.pill {font-size:12px;}
+.notice {padding:13px 16px;font-size:13px;line-height:1.6;border-radius:8px;}
+.empty-state {font-size:13px;}
+/* Margin */
+.panel .row-buttons button,.inline-form button {font-size:13px;border-radius:7px;}
+/* Login */
+.login-body {background:#f7f9fc;}
+.login-card {max-width:410px;border-radius:12px;box-shadow:none;padding:34px 34px 38px;border:1px solid #e4e9f1;}
+.login-card h1 {font-size:26px;color:#1c2b3f;margin:0 0 27px;font-weight:750;}
+.login-card label {font-size:13px;color:#42516a;font-weight:600;}
+.login-card input {font-size:15px;border:1px solid #dbe3ee;min-height:44px;border-radius:7px;}
+.login-card .login-button {width:100%;margin-top:22px;}
+@media(max-width:1100px){.clean-process-grid {grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:800px){.clean-process-grid {grid-template-columns:1fr;}.content {padding:23px 18px 50px;}.topbar {padding:0 16px;}.clean-process-card {min-height:132px;padding:22px;}.clean-margin {padding:23px;}}
+@media(max-width:760px){.sidebar {position:fixed;top:0;left:0;height:100vh;z-index:30;transform:translateX(-105%);transition:transform .18s;box-shadow:10px 0 30px #14223820;}.sidebar.open {transform:translateX(0);}.menu-toggle {display:block;color:#1f324c;font-size:21px;}.session-user {max-width:115px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}.topbar-title {font-size:14px;}}
+@media(max-width:440px){.clean-margin {align-items:flex-start;flex-direction:column;gap:16px;}.clean-margin-value {font-size:30px;}.login-card {padding:26px 22px;}}

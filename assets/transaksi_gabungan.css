@@ -1,0 +1,23 @@
+/* Tiga proses bisnis: header dan rincian dalam satu tabel, langsung terlihat. */
+.transaction-list .panel-heading { align-items:center; gap:12px; }
+.transaction-table { min-width:860px; }
+.transaction-table th:nth-child(4) { min-width:285px; }
+.transaction-table td { vertical-align:top; }
+.transaction-table .transaction-id { font-weight:700; white-space:nowrap; }
+.transaction-table .transaction-date { white-space:nowrap; color:#59687e; }
+.transaction-info strong,.transaction-info span { display:block; }
+.transaction-info strong { font-weight:650; margin-bottom:4px; }
+.transaction-info span { color:#65758b; font-size:12px; }
+.transaction-item { display:grid; grid-template-columns:minmax(95px,1fr) minmax(90px,auto) minmax(95px,auto); column-gap:12px; row-gap:3px; padding:8px 0; align-items:baseline; border-bottom:1px solid #edf0f5; }
+.transaction-item:first-child { padding-top:0; }
+.transaction-item:last-child { border-bottom:0; padding-bottom:0; }
+.transaction-item-name { font-weight:600; min-width:0; overflow-wrap:anywhere; }
+.transaction-item-calc { white-space:nowrap; color:#637086; font-size:12px; }
+.transaction-item strong { justify-self:end; white-space:nowrap; }
+.transaction-edit { grid-column:1 / -1; font-size:12px; font-weight:600; color:#155eef; }
+.transaction-total strong,.transaction-total span { display:block; white-space:nowrap; }
+.transaction-total span { margin-top:5px; font-size:12px; color:#758399; }
+.transaction-recent { background:#f2f7ff; }
+.transaction-recent td:first-child { border-left:3px solid #155eef; }
+.transaction-status { white-space:nowrap; }
+@media (max-width:1160px) {.transaction-item { grid-template-columns:minmax(120px,1fr) auto; }.transaction-item strong { grid-column:2; }.transaction-item-calc { grid-column:1; }}
