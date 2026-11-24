@@ -1,1 +1,0 @@
-Folder sql/ adalah peninggalan versi lama. File SQL lama di sini dapat tetap ada setelah replace. JANGAN jalankan ulang. Untuk versi terbaru gunakan file sql_manual/ secara berurutan dan manual di HeidiSQL.

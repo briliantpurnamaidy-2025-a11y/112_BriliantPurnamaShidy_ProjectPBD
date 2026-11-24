@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
             if ($remaining-$qty>0) $complete=false;
         }
         if (!$ins) throw new RuntimeException('Isi setidaknya satu jumlah barang yang diterima.');
-        // Kunci baris barang dalam urutan konsisten; trigger memperbarui barang.harga.
+        
         foreach ($ins as $x) {
             $q=$pdo->prepare('SELECT idbarang FROM barang WHERE idbarang=? FOR UPDATE');
             $q->execute([$x['id']]); $q->fetchColumn();
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
         $q->execute([$orderId,$user['iduser']]); $receiptId=(int)$pdo->lastInsertId();
         $q=$pdo->prepare('INSERT INTO detail_penerimaan (idpenerimaan,barang_idbarang,jumlah_terima,harga_satuan_terima,sub_total_terima) VALUES (?,?,?,?,?)');
         foreach($ins as $x) $q->execute([$receiptId,$x['id'],$x['qty'],$x['price'],$x['subtotal']]);
-        // Trigger stok harus terpasang; verifikasi agar tidak ada penerimaan tanpa kartu stok.
+      
         $chk=$pdo->prepare("SELECT COUNT(*) FROM kartu_stok WHERE jenis_transaksi='M' AND idtransaksi=?");
         $chk->execute([$receiptId]);
         if ((int)$chk->fetchColumn()!==count($ins)) throw new RuntimeException('Pencatatan stok masuk tidak sesuai. Transaksi dibatalkan; periksa Trigger.');

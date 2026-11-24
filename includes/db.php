@@ -1,9 +1,6 @@
 <?php
 declare(strict_types=1);
-/**
- * Koneksi PDO aplikasi final Toko Sembako Gen Z.
- * Tidak mengimpor config.php maupun file PHP dari website CUD lama.
- */
+
 function db(): PDO
 {
     static $conn = null;

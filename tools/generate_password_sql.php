@@ -1,5 +1,5 @@
 <?php
-/** CLI SAJA. Tidak membuat perubahan DB. Cetak SQL hash untuk ditempel manual di HeidiSQL. */
+
 declare(strict_types=1);
 if (PHP_SAPI !== 'cli') { http_response_code(403); exit('Jalankan melalui terminal PHP CLI.'); }
 $username = trim((string)readline('Username yang akan diubah (admin_pro/kasir/manajer): '));

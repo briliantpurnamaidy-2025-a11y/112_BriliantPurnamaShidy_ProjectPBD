@@ -39,12 +39,28 @@ try{
     if($raw!==''&&(!is_string($raw)||!ctype_digit($raw)))throw new RuntimeException('Filter satuan tidak valid.');
     $filter=$raw!==''?(int)$raw:null;
     if($filter!==null){
-        // Stored Procedure asli bekerja di belakang layar ketika filter satuan dipilih.
+        
         $q=$pdo->prepare('CALL sp_tampil_barang_per_satuan(?)');$q->execute([$filter]);$barang=$q->fetchAll();$q->closeCursor();
     }else{
         $barang=$pdo->query('SELECT idbarang,nama_barang,nama_satuan,harga,status FROM v_master_barang ORDER BY nama_barang')->fetchAll();
     }
     if($status!=='all')$barang=array_values(array_filter($barang,static fn($r)=>(string)$r['status']===$status));
+
+    
+    $stokRows=$pdo->query(
+        'SELECT k.idbarang, k.stock
+         FROM v_kartu_stok k
+         JOIN (
+             SELECT idbarang, MAX(idkartu_stok) AS id_terakhir
+             FROM v_kartu_stok
+             GROUP BY idbarang
+         ) terbaru ON terbaru.idbarang=k.idbarang AND terbaru.id_terakhir=k.idkartu_stok'
+    )->fetchAll();
+    $stokPerBarang=[];
+    foreach($stokRows as $row){$stokPerBarang[(int)$row['idbarang']]=(int)$row['stock'];}
+    foreach($barang as &$b){$b['stok_tersedia']=$stokPerBarang[(int)$b['idbarang']]??0;}
+    unset($b);
+
     $ms=$pdo->query('SELECT persen FROM v_margin_aktif')->fetchAll(PDO::FETCH_COLUMN);
     if(count($ms)===1){$margin=(float)$ms[0];$calc=$pdo->prepare('SELECT fn_hitung_harga_jual(?,?)');
         foreach($barang as &$b){$calc->execute([(int)$b['harga'],$margin]);$b['harga_jual']=(int)round((float)$calc->fetchColumn());}unset($b);
@@ -65,8 +81,8 @@ mulaiLayout('Data Barang','barang');
 <div class="form-actions"><button class="primary-btn"><?= $edit?'Simpan Perubahan':'Tambah Barang' ?></button><?php if($edit):?><a href="barang.php">Batal Edit</a><?php endif;?></div></form></section><?php endif;?>
 <section class="panel section-spacing"><div class="panel-heading"><h2>Daftar Barang</h2></div>
 <form method="get" class="filter-bar"><label>Filter satuan<select name="idsatuan"><option value="">Semua Satuan</option><?php foreach($satuan as $s):?><option value="<?= (int)$s['idsatuan'] ?>" <?= $filter===(int)$s['idsatuan']?'selected':'' ?>><?= viewEsc($s['nama_satuan']) ?></option><?php endforeach;?></select></label><label>Status<select name="status"><option value="all">Semua</option><option value="1" <?= $status==='1'?'selected':'' ?>>Aktif</option><option value="0" <?= $status==='0'?'selected':'' ?>>Nonaktif</option></select></label><button class="small-btn">Tampilkan</button></form>
-<div class="table-wrap"><table class="data-table list-table"><thead><tr><th>Nama Barang</th><th>Satuan</th><th>Harga Beli</th><th>Harga Jual</th><th>Status</th><?php if($allowed):?><th>Aksi</th><?php endif;?></tr></thead><tbody>
-<?php foreach($barang as $b):?><tr><td><strong><?= viewEsc($b['nama_barang']) ?></strong></td><td><?= viewEsc($b['nama_satuan']) ?></td><td><?= viewEsc(viewUang($b['harga'])) ?></td><td><?= isset($b['harga_jual'])?viewEsc(viewUang($b['harga_jual'])):'—' ?></td><td><?= viewCell('status',$b['status']) ?></td>
+<div class="table-wrap"><table class="data-table list-table"><thead><tr><th>Nama Barang</th><th>Satuan</th><th>Stok</th><th>Harga Beli</th><th>Harga Jual</th><th>Status</th><?php if($allowed):?><th>Aksi</th><?php endif;?></tr></thead><tbody>
+<?php foreach($barang as $b):?><tr><td><strong><?= viewEsc($b['nama_barang']) ?></strong></td><td><?= viewEsc($b['nama_satuan']) ?></td><td><strong><?= number_format((int)($b['stok_tersedia'] ?? 0), 0, ',', '.') ?></strong></td><td><?= viewEsc(viewUang($b['harga'])) ?></td><td><?= isset($b['harga_jual'])?viewEsc(viewUang($b['harga_jual'])):'—' ?></td><td><?= viewCell('status',$b['status']) ?></td>
 <?php if($allowed):?><td class="row-buttons"><a href="barang.php?edit=<?= (int)$b['idbarang'] ?>">Edit</a><form class="inline-form" method="post"><input type="hidden" name="csrf" value="<?= viewEsc(appCsrf()) ?>"><input type="hidden" name="action" value="toggle"><input type="hidden" name="id" value="<?= (int)$b['idbarang'] ?>"><button><?= (string)$b['status']==='1'?'Nonaktifkan':'Aktifkan' ?></button></form><form class="inline-form" method="post" onsubmit="return confirm('Hapus barang ini permanen jika belum digunakan transaksi?')"><input type="hidden" name="csrf" value="<?= viewEsc(appCsrf()) ?>"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= (int)$b['idbarang'] ?>"><button>Hapus</button></form></td><?php endif;?></tr><?php endforeach;?></tbody></table></div>
 <?php if(!$barang):?><div class="empty-state">Belum ada barang sesuai filter.</div><?php endif;?></section>
 <?php akhiriLayout(); ?>

@@ -9,7 +9,7 @@ try{
     $raw=$_GET['idbarang']??'';
     if($raw!==''){
         $selected=idPos($raw,'Barang');
-        // Pemanggilan Stored Procedure tidak ditampilkan sebagai menu pengujian.
+        
         $q=$pdo->prepare('CALL sp_riwayat_stok_per_barang(?)');$q->execute([$selected]);$rows=$q->fetchAll();$q->closeCursor();
     }else{
         $rows=$pdo->query('SELECT idkartu_stok,nama_barang,jenis_transaksi,masuk,keluar,stock,created_at,idtransaksi,idbarang FROM v_kartu_stok ORDER BY idkartu_stok DESC LIMIT 500')->fetchAll();

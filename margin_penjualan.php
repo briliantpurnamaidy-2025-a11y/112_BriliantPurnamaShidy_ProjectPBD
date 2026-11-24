@@ -9,7 +9,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         requireAccess('margin','write');verifyAppCsrf();
         $action=(string)($_POST['action']??'');
         $pdo->beginTransaction();
-        // Lock seluruh baris agar pergantian margin oleh dua operator tidak bersaing.
+        
         $pdo->query('SELECT idmargin_penjualan FROM margin_penjualan ORDER BY idmargin_penjualan FOR UPDATE')->fetchAll();
         if($action==='activate'){
             $id=idPos($_POST['id']??'','Margin');

@@ -45,7 +45,7 @@ function roleCan(string $menu, string $aksi='read'): bool
     $u = currentUser();
     if ($u === null) return false;
     $r = (int)$u['idrole'];
-    // Role 2 (Petugas Gudang) ditolak oleh login; tidak dipakai sebagai pengguna aplikasi.
+    
     if ($r === 1) return true;
     $read = [
         'dashboard' => [3,4], 'barang' => [3,4], 'satuan' => [3,4],
@@ -97,7 +97,7 @@ function flashTake(): ?array
 }
 function redirectTo(string $url): never
 {
-    // URL internal dan relatif saja; jangan menerima URL dari input pengguna.
+    
     header('Location: ' . $url, true, 303);
     exit;
 }

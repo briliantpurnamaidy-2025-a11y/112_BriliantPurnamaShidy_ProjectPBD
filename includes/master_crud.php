@@ -3,7 +3,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/ops.php';
 require_once __DIR__ . '/layout.php';
 
-/** Master sederhana dengan SQL mentah. Soft disable digunakan untuk data berelasi. */
+
 function tampilkanMasterCrud(string $key, array $cfg): void
 {
     requireAccess($key);

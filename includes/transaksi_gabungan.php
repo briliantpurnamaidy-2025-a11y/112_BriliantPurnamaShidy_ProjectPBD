@@ -100,7 +100,7 @@ function tampilkanTransaksiGabungan(string $jenis): void
             <table class="data-table transaction-table" id="masterTable">
                 <thead>
                 <tr>
-                    <th>ID</th><th>Tanggal</th><th>Informasi</th><th>Barang</th><th><?= $jenis === 'penjualan' ? 'Margin' : 'Status' ?></th><th>Total</th>
+                    <th>ID</th><th>Tanggal</th><th>Informasi</th><th>Barang</th><th><?= $jenis === 'penjualan' ? 'Margin' : 'Status' ?></th><th>Total</th><th>Aksi</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -148,6 +148,9 @@ function tampilkanTransaksiGabungan(string $jenis): void
                             <?php if ($jenis !== 'penerimaan'): ?>
                                 <span>PPN <?= viewEsc(viewUang($r['ppn'] ?? 0)) ?></span>
                             <?php endif; ?>
+                        </td>
+                        <td class="transaction-action">
+                            <a class="transaction-detail-button" href="detail_<?= viewEsc($jenis) ?>.php?id=<?= $id ?>" aria-label="Lihat detail <?= viewEsc($jenis) ?> nomor <?= $id ?>">Lihat Detail <span aria-hidden="true">→</span></a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

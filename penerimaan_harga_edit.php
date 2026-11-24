@@ -14,7 +14,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         $q=$pdo->prepare('SELECT idbarang FROM barang WHERE idbarang=? FOR UPDATE');$q->execute([(int)$detail['barang_idbarang']]);$q->fetchColumn();
         $q=$pdo->prepare('UPDATE detail_penerimaan SET harga_satuan_terima=?,sub_total_terima=? WHERE iddetail_penerimaan=?');
         $q->execute([$price,$subtotal,$id]);
-        // Harga utama harus selalu sesuai dengan penerimaan TERBARU barang tersebut.
+    
         $q=$pdo->prepare('SELECT harga_satuan_terima FROM detail_penerimaan WHERE barang_idbarang=? ORDER BY iddetail_penerimaan DESC LIMIT 1');
         $q->execute([(int)$detail['barang_idbarang']]);$latest=(int)$q->fetchColumn();
         $q=$pdo->prepare('UPDATE barang SET harga=? WHERE idbarang=?');$q->execute([$latest,(int)$detail['barang_idbarang']]);

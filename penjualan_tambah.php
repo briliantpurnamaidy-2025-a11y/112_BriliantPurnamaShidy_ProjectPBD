@@ -19,7 +19,7 @@ try {
 if($_SERVER['REQUEST_METHOD']==='POST'){
     try {
         verifyAppCsrf();
-        // Validasi jumlah, harga ditentukan oleh database (bukan input browser).
+     
         $ids=$_POST['idbarang']??null;$qtys=$_POST['jumlah']??null;
         if(!is_array($ids)||!is_array($qtys)||count($ids)!==count($qtys))throw new RuntimeException('Rincian penjualan tidak valid.');
         $requested=[];
@@ -32,7 +32,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         if(!$requested||count($requested)>30)throw new RuntimeException('Pilih 1 sampai 30 barang untuk dijual.');
         ksort($requested);
         $pdo->beginTransaction();
-        // Lock margin agar tidak berubah saat harga jual dihitung.
+    
         $marginLock=$pdo->query('SELECT idmargin_penjualan,persen FROM margin_penjualan WHERE status=1 FOR UPDATE')->fetchAll();
         if(count($marginLock)!==1)throw new RuntimeException('Harus ada tepat satu margin aktif.');
         $m=$marginLock[0];
@@ -57,7 +57,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         $q->execute([$user['iduser'],$m['idmargin_penjualan']]);$saleId=(int)$pdo->lastInsertId();
         $q=$pdo->prepare('INSERT INTO detail_penjualan(penjualan_idpenjualan,idbarang,jumlah,harga_satuan,subtotal) VALUES (?,?,?,?,?)');
         foreach($items as $it)$q->execute([$saleId,$it['id'],$it['qty'],$it['price'],$it['subtotal']]);
-        // Trigger stok keluar wajib ada. Jika tidak ada, seluruh transaksi di-rollback.
+        
         $q=$pdo->prepare("SELECT COUNT(*) FROM kartu_stok WHERE jenis_transaksi='K' AND idtransaksi=?");
         $q->execute([$saleId]);
         if((int)$q->fetchColumn()!==count($items))throw new RuntimeException('Pengurangan stok gagal. Periksa Trigger stok keluar. Transaksi dibatalkan.');

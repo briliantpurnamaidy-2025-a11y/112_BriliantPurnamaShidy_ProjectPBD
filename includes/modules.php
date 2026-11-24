@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-/** Data menu dan label kolom saja. Query SELECT ada pada setiap file .php. */
+
 function semuaModulView(): array
 {
     return [

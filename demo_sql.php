@@ -1,5 +1,5 @@
 <?php
-/** Panel eksekusi dan pembuktian objek SQL; semua formulir di sini GET/read-only. */
+
 declare(strict_types=1);
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/auth.php';

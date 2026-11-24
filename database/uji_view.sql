@@ -1,5 +1,4 @@
--- Jalankan di HeidiSQL pada database "praktikumpbd" (atau database yang kamu pakai).
--- Skrip INI HANYA MEMBACA DATA, tidak mengubah tabel atau SQL VIEW.
+
 SELECT DATABASE() AS database_aktif;
 SELECT TABLE_NAME AS nama_view
 FROM information_schema.VIEWS
