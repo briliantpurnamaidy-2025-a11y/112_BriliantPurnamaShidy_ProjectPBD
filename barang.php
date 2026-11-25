@@ -39,15 +39,14 @@ try{
     if($raw!==''&&(!is_string($raw)||!ctype_digit($raw)))throw new RuntimeException('Filter satuan tidak valid.');
     $filter=$raw!==''?(int)$raw:null;
     if($filter!==null){
-        // Stored Procedure asli bekerja di belakang layar ketika filter satuan dipilih.
+
         $q=$pdo->prepare('CALL sp_tampil_barang_per_satuan(?)');$q->execute([$filter]);$barang=$q->fetchAll();$q->closeCursor();
     }else{
         $barang=$pdo->query('SELECT idbarang,nama_barang,nama_satuan,harga,status FROM v_master_barang ORDER BY nama_barang')->fetchAll();
     }
     if($status!=='all')$barang=array_values(array_filter($barang,static fn($r)=>(string)$r['status']===$status));
 
-    // Stok berasal dari saldo TERAKHIR kartu_stok; bukan kolom baru di tabel barang.
-    // Satu query untuk seluruh barang, sehingga tidak memanggil SQL per baris tabel.
+  
     $stokRows=$pdo->query(
         'SELECT k.idbarang, k.stock
          FROM v_kartu_stok k
@@ -69,7 +68,7 @@ try{
 }catch(Throwable $e){$error=dbError($e);}
 mulaiLayout('Data Barang','barang');
 ?>
-<!-- Switch geser aktif/nonaktif: tampilan saja, penyimpanan tetap menggunakan POST + PDO UPDATE. -->
+
 <style>
 .row-buttons .barang-toggle-form { display:inline-flex; vertical-align:middle; align-items:center; margin:2px 6px; }
 .row-buttons .barang-toggle-form .barang-toggle-switch {
@@ -114,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!button) return;
       form.dataset.submitting = '1';
       var nowActive = button.getAttribute('aria-checked') === 'true';
-      // Gerakan switch terlihat sebentar, kemudian form normal dikirim ke PHP.
+ 
       button.setAttribute('aria-checked', nowActive ? 'false' : 'true');
       button.disabled = true;
       var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
