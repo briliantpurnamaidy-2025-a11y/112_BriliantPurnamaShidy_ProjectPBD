@@ -39,14 +39,15 @@ try{
     if($raw!==''&&(!is_string($raw)||!ctype_digit($raw)))throw new RuntimeException('Filter satuan tidak valid.');
     $filter=$raw!==''?(int)$raw:null;
     if($filter!==null){
-        
+        // Stored Procedure asli bekerja di belakang layar ketika filter satuan dipilih.
         $q=$pdo->prepare('CALL sp_tampil_barang_per_satuan(?)');$q->execute([$filter]);$barang=$q->fetchAll();$q->closeCursor();
     }else{
         $barang=$pdo->query('SELECT idbarang,nama_barang,nama_satuan,harga,status FROM v_master_barang ORDER BY nama_barang')->fetchAll();
     }
     if($status!=='all')$barang=array_values(array_filter($barang,static fn($r)=>(string)$r['status']===$status));
 
-    
+    // Stok berasal dari saldo TERAKHIR kartu_stok; bukan kolom baru di tabel barang.
+    // Satu query untuk seluruh barang, sehingga tidak memanggil SQL per baris tabel.
     $stokRows=$pdo->query(
         'SELECT k.idbarang, k.stock
          FROM v_kartu_stok k
@@ -68,6 +69,62 @@ try{
 }catch(Throwable $e){$error=dbError($e);}
 mulaiLayout('Data Barang','barang');
 ?>
+<!-- Switch geser aktif/nonaktif: tampilan saja, penyimpanan tetap menggunakan POST + PDO UPDATE. -->
+<style>
+.row-buttons .barang-toggle-form { display:inline-flex; vertical-align:middle; align-items:center; margin:2px 6px; }
+.row-buttons .barang-toggle-form .barang-toggle-switch {
+  position:relative; display:inline-block; box-sizing:border-box;
+  width:50px; height:28px; min-width:50px; padding:0; margin:0;
+  border:1px solid #cbd5e1; border-radius:999px;
+  background:#e2e8f0; color:inherit; cursor:pointer;
+  vertical-align:middle; appearance:none; -webkit-appearance:none;
+  transition:background-color .22s ease,border-color .22s ease,box-shadow .22s ease;
+}
+.row-buttons .barang-toggle-form .barang-toggle-switch[aria-checked="true"] {
+  background:#0085ff; border-color:#0085ff;
+}
+.row-buttons .barang-toggle-form .barang-toggle-switch .barang-toggle-thumb {
+  position:absolute; top:3px; left:3px;
+  display:block; width:20px; height:20px; border-radius:50%;
+  background:white; box-shadow:0 1px 3px rgba(15,23,42,.22);
+  transition:transform .22s ease;
+}
+.row-buttons .barang-toggle-form .barang-toggle-switch[aria-checked="true"] .barang-toggle-thumb {
+  transform:translateX(22px);
+}
+.row-buttons .barang-toggle-form .barang-toggle-switch:focus-visible {
+  outline:3px solid rgba(0,133,255,.28); outline-offset:3px;
+}
+.row-buttons .barang-toggle-form .barang-toggle-switch:hover {
+  box-shadow:0 0 0 3px rgba(0,133,255,.10);
+}
+.row-buttons .barang-toggle-form .barang-toggle-switch:disabled { cursor:wait; opacity:.84; }
+@media (prefers-reduced-motion: reduce) {
+  .row-buttons .barang-toggle-form .barang-toggle-switch,
+  .row-buttons .barang-toggle-form .barang-toggle-thumb { transition:none; }
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('form.barang-toggle-form').forEach(function (form) {
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      if (form.dataset.submitting === '1') return;
+      var button = form.querySelector('.barang-toggle-switch');
+      if (!button) return;
+      form.dataset.submitting = '1';
+      var nowActive = button.getAttribute('aria-checked') === 'true';
+      // Gerakan switch terlihat sebentar, kemudian form normal dikirim ke PHP.
+      button.setAttribute('aria-checked', nowActive ? 'false' : 'true');
+      button.disabled = true;
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      setTimeout(function () {
+        HTMLFormElement.prototype.submit.call(form);
+      }, reduceMotion ? 0 : 230);
+    });
+  });
+});
+</script>
 <div class="page-header"><div><a class="breadcrumb-back" href="index.php">← Dashboard</a><h1>Data Barang<span class="accent">.</span></h1><p>Harga beli diperbarui saat penerimaan, harga jual mengikuti margin aktif.</p></div></div>
 <?php if($f=flashTake()):?><div class="notice notice-info"><?= viewEsc($f['message']) ?></div><?php endif;?>
 <?php if($error):?><div class="notice notice-error"><?= viewEsc($error) ?></div><?php endif;?>
@@ -83,6 +140,6 @@ mulaiLayout('Data Barang','barang');
 <form method="get" class="filter-bar"><label>Filter satuan<select name="idsatuan"><option value="">Semua Satuan</option><?php foreach($satuan as $s):?><option value="<?= (int)$s['idsatuan'] ?>" <?= $filter===(int)$s['idsatuan']?'selected':'' ?>><?= viewEsc($s['nama_satuan']) ?></option><?php endforeach;?></select></label><label>Status<select name="status"><option value="all">Semua</option><option value="1" <?= $status==='1'?'selected':'' ?>>Aktif</option><option value="0" <?= $status==='0'?'selected':'' ?>>Nonaktif</option></select></label><button class="small-btn">Tampilkan</button></form>
 <div class="table-wrap"><table class="data-table list-table"><thead><tr><th>Nama Barang</th><th>Satuan</th><th>Stok</th><th>Harga Beli</th><th>Harga Jual</th><th>Status</th><?php if($allowed):?><th>Aksi</th><?php endif;?></tr></thead><tbody>
 <?php foreach($barang as $b):?><tr><td><strong><?= viewEsc($b['nama_barang']) ?></strong></td><td><?= viewEsc($b['nama_satuan']) ?></td><td><strong><?= number_format((int)($b['stok_tersedia'] ?? 0), 0, ',', '.') ?></strong></td><td><?= viewEsc(viewUang($b['harga'])) ?></td><td><?= isset($b['harga_jual'])?viewEsc(viewUang($b['harga_jual'])):'—' ?></td><td><?= viewCell('status',$b['status']) ?></td>
-<?php if($allowed):?><td class="row-buttons"><a href="barang.php?edit=<?= (int)$b['idbarang'] ?>">Edit</a><form class="inline-form" method="post"><input type="hidden" name="csrf" value="<?= viewEsc(appCsrf()) ?>"><input type="hidden" name="action" value="toggle"><input type="hidden" name="id" value="<?= (int)$b['idbarang'] ?>"><button><?= (string)$b['status']==='1'?'Nonaktifkan':'Aktifkan' ?></button></form><form class="inline-form" method="post" onsubmit="return confirm('Hapus barang ini permanen jika belum digunakan transaksi?')"><input type="hidden" name="csrf" value="<?= viewEsc(appCsrf()) ?>"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= (int)$b['idbarang'] ?>"><button>Hapus</button></form></td><?php endif;?></tr><?php endforeach;?></tbody></table></div>
+<?php if($allowed):?><td class="row-buttons"><a href="barang.php?edit=<?= (int)$b['idbarang'] ?>">Edit</a><form class="inline-form barang-toggle-form" method="post"><input type="hidden" name="csrf" value="<?= viewEsc(appCsrf()) ?>"><input type="hidden" name="action" value="toggle"><input type="hidden" name="id" value="<?= (int)$b['idbarang'] ?>"><?php $barangAktif=(string)$b['status']==='1'; ?><button type="submit" class="barang-toggle-switch" role="switch" aria-checked="<?= $barangAktif?'true':'false' ?>" aria-label="<?= viewEsc(($barangAktif?'Nonaktifkan ':'Aktifkan ').$b['nama_barang']) ?>" title="<?= $barangAktif?'Klik untuk menonaktifkan':'Klik untuk mengaktifkan' ?>"><span class="barang-toggle-thumb" aria-hidden="true"></span></button></form><form class="inline-form" method="post" onsubmit="return confirm('Hapus barang ini permanen jika belum digunakan transaksi?')"><input type="hidden" name="csrf" value="<?= viewEsc(appCsrf()) ?>"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= (int)$b['idbarang'] ?>"><button>Hapus</button></form></td><?php endif;?></tr><?php endforeach;?></tbody></table></div>
 <?php if(!$barang):?><div class="empty-state">Belum ada barang sesuai filter.</div><?php endif;?></section>
 <?php akhiriLayout(); ?>
