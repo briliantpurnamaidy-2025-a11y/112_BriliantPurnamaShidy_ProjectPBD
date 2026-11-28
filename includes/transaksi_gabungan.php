@@ -3,10 +3,6 @@ declare(strict_types=1);
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/layout.php';
 
-/** Tampilkan transaksi bersama rincian barangnya dalam SATU halaman.
- * Semua sumber data adalah SQL View yang sudah dipasang pada MySQL.
- * Tidak menyimpan atau mengubah data apa pun.
- */
 function tampilkanTransaksiGabungan(string $jenis): void
 {
     $opsi = [
